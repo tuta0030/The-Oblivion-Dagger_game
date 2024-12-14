@@ -20,6 +20,7 @@ var running = false
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 func _ready():
+	# Hide the mouse at the begining
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
 func _input(event):
@@ -46,6 +47,10 @@ func _physics_process(delta):
 	# Handle Jump.
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
+	
+	# Left click to attack
+	if Input.is_action_just_pressed("attack"):
+		animation_player.play("kick")
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
@@ -53,6 +58,7 @@ func _physics_process(delta):
 	# var input_dir = Input.get_vector(KEY_A, KEY_D, KEY_W, KEY_S)
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
+
 		if running:
 			if animation_player.current_animation != "running":
 				animation_player.play("running")
@@ -60,16 +66,16 @@ func _physics_process(delta):
 		else:
 			if animation_player.current_animation != "walking":
 				animation_player.play("walking")
-
-
 		
 		visual.look_at(position + direction)
 
 		velocity.x = direction.x * speed
 		velocity.z = direction.z * speed
 	else:
-		if animation_player.current_animation != "idle":
+
+		if (animation_player.current_animation != "idle") and (animation_player.current_animation != "kick"):
 			animation_player.play("idle")
+		# Reset the speed to 0
 		velocity.x = move_toward(velocity.x, 0, speed)
 		velocity.z = move_toward(velocity.z, 0, speed)
 

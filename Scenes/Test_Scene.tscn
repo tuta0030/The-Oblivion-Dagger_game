@@ -1,10 +1,7 @@
-[gd_scene load_steps=19 format=3 uid="uid://rqq6ellj6w87"]
+[gd_scene load_steps=9 format=3 uid="uid://rqq6ellj6w87"]
 
 [ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_yt8t5"]
-[ext_resource type="Texture2D" uid="uid://b58xv1joypxo5" path="res://third_person_controller_assets-main/textures/grids/Orange/texture_09.png" id="2_hlnmb"]
-[ext_resource type="Texture2D" uid="uid://cm5m7nr7dugjd" path="res://third_person_controller_assets-main/textures/grids/Purple/texture_09.png" id="3_2h288"]
-[ext_resource type="Terrain3DStorage" uid="uid://4j5qc8acdwx7" path="res://Terrain/Main_World.res" id="3_ephfb"]
-[ext_resource type="Texture2D" uid="uid://djg8y25y06h5n" path="res://third_person_controller_assets-main/textures/grids/Green/texture_09.png" id="4_yd4dw"]
+[ext_resource type="Material" uid="uid://dns7hpa5qerd6" path="res://assets/materials/dirt_block.material" id="4_4pf0m"]
 [ext_resource type="PackedScene" uid="uid://bbjehkmvm75vl" path="res://Scenes/Player.tscn" id="5_pwej5"]
 [ext_resource type="PackedScene" uid="uid://drm7p3u38gkqs" path="res://Scenes/UI/pause_menu.tscn" id="6_qo4ol"]
 
@@ -26,54 +23,8 @@ fog_enabled = true
 fog_light_color = Color(0.533333, 0.796078, 0.815686, 1)
 fog_density = 0.005
 
-[sub_resource type="Gradient" id="Gradient_p0uq6"]
-offsets = PackedFloat32Array(0.2, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_hvfse"]
-noise_type = 2
-frequency = 0.03
-cellular_jitter = 3.0
-cellular_return_type = 0
-domain_warp_enabled = true
-domain_warp_type = 1
-domain_warp_amplitude = 50.0
-domain_warp_fractal_type = 2
-domain_warp_fractal_lacunarity = 1.5
-domain_warp_fractal_gain = 1.0
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_di81w"]
-seamless = true
-color_ramp = SubResource("Gradient_p0uq6")
-noise = SubResource("FastNoiseLite_hvfse")
-
-[sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_p0kad"]
-_shader_parameters = {
-"blend_sharpness": 0.87,
-"height_blending": true,
-"macro_variation1": Color(1, 1, 1, 1),
-"macro_variation2": Color(1, 1, 1, 1),
-"noise1_angle": 0.0,
-"noise1_offset": Vector2(0.5, 0.5),
-"noise1_scale": 0.04,
-"noise2_scale": 0.076,
-"noise3_scale": 0.225,
-"noise_texture": SubResource("NoiseTexture2D_di81w")
-}
-show_checkered = true
-
-[sub_resource type="Terrain3DTextureList" id="Terrain3DTextureList_v12pf"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3xb1y"]
-albedo_texture = ExtResource("2_hlnmb")
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c67o1"]
-albedo_texture = ExtResource("3_2h288")
-uv1_triplanar = true
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p3tbv"]
-albedo_texture = ExtResource("4_yd4dw")
-uv1_triplanar = true
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vdger"]
+albedo_color = Color(0.113725, 0.341176, 0.223529, 1)
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_yt8t5")
@@ -89,26 +40,30 @@ environment = SubResource("Environment_th05o")
 [node name="PauseMenu" parent="." node_paths=PackedStringArray("game_manager") instance=ExtResource("6_qo4ol")]
 game_manager = NodePath("..")
 
-[node name="Terrain3D" type="Terrain3D" parent="."]
-storage = ExtResource("3_ephfb")
-material = SubResource("Terrain3DMaterial_p0kad")
-texture_list = SubResource("Terrain3DTextureList_v12pf")
-
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
-transform = Transform3D(0.90003, 0, -0.435828, 0, 1, 0, 0.435828, 0, 0.90003, -3.31608, 0.4, 2.67402)
-material_override = SubResource("StandardMaterial3D_3xb1y")
-use_collision = true
-
-[node name="CSGBox3D2" type="CSGBox3D" parent="."]
-transform = Transform3D(0.664683, 0, 0.747126, 0, 1, 0, -0.747126, 0, 0.664683, 0.974709, 0.887253, -2.72683)
-material_override = SubResource("StandardMaterial3D_c67o1")
-use_collision = true
-size = Vector3(2, 2, 2)
-
-[node name="CSGBox3D3" type="CSGBox3D" parent="."]
-transform = Transform3D(0.990805, 0, 0.135301, 0, 1, 0, -0.135301, 0, 0.990805, 5.86323, 1.5, 5.65511)
-material_override = SubResource("StandardMaterial3D_p3tbv")
-use_collision = true
-size = Vector3(3, 3, 3)
-
 [node name="Player" parent="." instance=ExtResource("5_pwej5")]
+
+[node name="Ground" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.65, 0)
+use_collision = true
+size = Vector3(100, 1, 100)
+material = SubResource("StandardMaterial3D_vdger")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.36078, 1.605, 0)
+size = Vector3(2, 2, 2)
+material = ExtResource("4_4pf0m")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.36078, 1.605, 0)
+size = Vector3(2, 2, 2)
+material = ExtResource("4_4pf0m")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.36078, 1.605, 5)
+size = Vector3(2, 2, 2)
+material = ExtResource("4_4pf0m")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.36078, 1.605, 0)
+size = Vector3(2, 2, 2)
+material = ExtResource("4_4pf0m")
